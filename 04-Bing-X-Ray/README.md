@@ -1225,7 +1225,6 @@ Android Developer
 JavaScript Developer
 
 Improve:
-
 "Java Developer"
 "Spring Boot"
 
