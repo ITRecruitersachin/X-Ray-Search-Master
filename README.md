@@ -4396,3 +4396,133 @@ Public Web Discovery
 
 **This is the difference between a Google search and a Recruiter X-Ray System.**
 
+
+# Finding Candidate Contact Info & Email Addresses — Methods Guide
+### Use case: AI Engineer sourcing, Boston MA
+
+## 1. Dedicated Email-Finder Tools (most reliable, built for this)
+
+| Tool | How it works |
+|---|---|
+| **Hunter.io** | Enter a company domain → returns email pattern + verified addresses; also has a Chrome extension that finds emails on any page you're viewing |
+| **ContactOut** | Chrome extension for LinkedIn/GitHub — shows personal + work email directly on profile pages |
+| **Apollo.io** | Large contact database + email finder, integrates with LinkedIn search |
+| **Lusha** | Chrome extension, pulls email/phone from LinkedIn profiles |
+| **Clearbit Connect** (Gmail plugin) | Finds email by name + company domain right inside Gmail |
+| **RocketReach** | Search by name/company, returns email + social links |
+| **Voila Norbert** | Simple name + domain → email finder |
+
+**How recruiters typically use these:** Find the candidate on LinkedIn/GitHub first → run the tool (browser extension or web app) → it either pulls a listed email or predicts one using common company patterns (e.g. `first.last@company.com`) and verifies deliverability.
+
+---
+
+## 2. Email Pattern Guessing (when you know the company, not the email)
+
+Most companies use a predictable format. Once you know where someone works:
+```
+firstname.lastname@company.com
+firstnamelastname@company.com
+firstinitiallastname@company.com
+firstname@company.com
+```
+**Trick:** Search the company's known email format by X-raying press releases or public docs:
+```
+"@company.com" filetype:pdf
+site:company.com "email" contact
+```
+Once you spot one confirmed employee email, you can infer the pattern for others (tools like Hunter.io automate this pattern-detection).
+
+---
+
+## 3. LinkedIn's Native "Contact Info" Section
+
+Often overlooked — many users voluntarily add email/phone here:
+- Open their profile → click **"Contact Info"** (usually under their name/headline)
+- Visible to any connection level in most cases, sometimes only 1st-degree — worth checking regardless, since it's the most direct, consent-given source
+
+---
+
+## 4. GitHub — Commit Email Addresses
+
+GitHub often exposes a user's email through their commit history, since Git requires an email to make a commit (unless the user has "keep my email private" enabled).
+
+**How to find it:**
+1. Go to their GitHub profile → click into any repo they've contributed to
+2. View a commit they authored → the commit metadata often shows their email
+3. Or use: `github.com/[username].patch` on any of their commits — this shows the raw patch including the author email
+
+**Note:** If the user has GitHub's "Keep my email addresses private" setting on, this will show a noreply address instead — respect that as a signal they don't want to be reached this way.
+
+---
+
+## 5. Personal Portfolio Sites / Resume PDFs
+
+As covered in the resume/portfolio search guide — personal sites and public resume PDFs frequently list email directly, since the person wants to be reached:
+```
+filetype:pdf "AI Engineer" resume Boston "@gmail.com" OR "@outlook.com"
+intitle:"AI Engineer" portfolio "contact" Boston
+```
+Most portfolio sites also have a dedicated **Contact** page/section — check that directly once you find the site.
+
+---
+
+## 6. X-ray Search for Publicly Posted Emails
+
+```
+"AI Engineer" Boston "@gmail.com"
+"machine learning engineer" "contact me at" Boston
+site:twitter.com OR site:x.com "AI Engineer" "DM me" OR "email me"
+```
+**Example use:** Job-seeking posts (per the previous "open to work" search techniques) frequently include a direct email in the post text itself, since the person wants easy inbound contact.
+
+---
+
+## 7. Company "Team" or "About" Pages
+
+Startups/small companies often list team emails directly:
+```
+site:company.com "team" OR "about" "AI Engineer" email
+```
+Even if not fully listed, the page can confirm the pattern (e.g. `firstname@company.com`), which you can then apply to the specific person's name.
+
+---
+
+## 8. University Directories / Alumni Pages
+
+For recent grads or candidates connected to MIT/Harvard/Northeastern/BU:
+```
+site:*.edu "AI Engineer" OR "machine learning" directory OR "contact" filetype:pdf
+```
+Some department directories or lab pages list current/former student emails publicly (especially research group pages).
+
+---
+
+## 9. Conference/Speaker Bio Pages
+
+Speaker bios for AI conferences sometimes include direct contact info or a linked personal site with contact details:
+```
+"AI Engineer" OR "ML Engineer" speaker Boston site:*.com "contact" -jobs
+```
+
+---
+
+## 10. Quick Reference — Contact-Finding Method by Situation
+
+| Situation | Best method |
+|---|---|
+| You know their LinkedIn profile | ContactOut/Lusha Chrome extension, or native "Contact Info" |
+| You know their company, not their email | Hunter.io pattern search |
+| You know their GitHub username | Check commit history / `.patch` URL trick |
+| You found a portfolio site | Check Contact page directly |
+| You found a job-seeking social post | Email is often pasted directly in the post/bio |
+| You know their university | Department/lab directory X-ray |
+
+---
+
+## 11. Compliance & Etiquette Notes (important — read before using)
+
+- **Use publicly available or professionally intended contact info.** Email addresses someone lists on LinkedIn, a resume PDF, a portfolio "Contact" page, or a "DM/email me" job post are clearly intended for outreach — fair game.
+- **Respect explicit privacy signals.** GitHub's "keep email private" setting, a locked/private social profile, or the absence of any contact info anywhere is a signal the person hasn't opted into being reached that way — don't work around it with scraping tools designed to bypass privacy settings.
+- **Tools like Hunter.io/ContactOut operate within terms of service** for pattern-matching and public data aggregation, but always double-check your company's compliance policy (CAN-SPAM for email outreach, GDPR if reaching candidates in/from the EU) before mass-emailing found addresses.
+- **First message matters more than the find.** However you got the email, open with how you found them and why you're reaching out — it builds trust and avoids the "creepy scraped my info" reaction, especially with technical candidates who are privacy-conscious by nature.
+
