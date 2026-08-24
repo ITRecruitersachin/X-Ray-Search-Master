@@ -4655,3 +4655,341 @@ Speaker bios for AI conferences sometimes include direct contact info or a linke
 - **Respect explicit privacy signals.** GitHub's "keep email private" setting, a locked/private social profile, or the absence of any contact info anywhere is a signal the person hasn't opted into being reached that way — don't work around it with scraping tools designed to bypass privacy settings.
 - **Tools like Hunter.io/ContactOut operate within terms of service** for pattern-matching and public data aggregation, but always double-check your company's compliance policy (CAN-SPAM for email outreach, GDPR if reaching candidates in/from the EU) before mass-emailing found addresses.
 - **First message matters more than the find.** However you got the email, open with how you found them and why you're reaching out — it builds trust and avoids the "creepy scraped my info" reaction, especially with technical candidates who are privacy-conscious by nature.
+
+
+
+# Finding Actively Job-Seeking Candidates — Deep Dive
+### Use case: AI Engineer, Boston MA — candidates signaling "open to work" / "actively seeking" with visible contact info
+
+The core idea: candidates who are actively job hunting *want* to be found, so they self-tag with phrases like "open to work," "actively seeking," "immediately available" — and often drop a phone/email right in the post or bio to skip the friction of DMs. Your job is to search for those exact signals.
+
+---
+
+## 1. LinkedIn — Highest-Yield Source
+
+### "Open to Work" native filter (best method, not a search trick)
+LinkedIn has a built-in "Open to Work" badge + filter:
+- In LinkedIn Recruiter or regular search → Filters → **"Open to Work"** toggle
+- This is self-declared by the candidate and far more reliable than X-ray guessing
+
+### Boolean search combined with Open to Work
+```
+("AI Engineer" OR "ML Engineer") AND Boston AND ("open to work" OR "actively seeking" OR "immediately available" OR "looking for new opportunities")
+```
+
+### X-ray for "open to work" posts/bios
+```
+site:linkedin.com/in "open to work" "AI Engineer" Boston
+site:linkedin.com/in "actively seeking" OR "immediately available" "machine learning" Boston
+```
+
+### Post-level X-ray (candidates who posted about being laid off / job hunting)
+```
+site:linkedin.com/posts "laid off" OR "open to work" "AI Engineer" OR "ML Engineer"
+```
+**Example result:** A LinkedIn post (not just a profile) where someone announces a layoff and says they're job hunting — these posts often include an email address directly in the text since the person wants inbound contact.
+
+### Contact info in "Contact Info" section
+LinkedIn lets users add email/phone to their public Contact Info card. Once you've found a relevant profile, always click "Contact Info" — many active job seekers proactively fill this in.
+
+---
+
+## 2. Twitter / X — Strong for Real-Time "Open to Work" Signals
+
+Tech layoffs and job searches get posted on Twitter/X constantly, often with contact info attached since DMs can be closed.
+
+### Native Twitter Advanced Search
+```
+"open to work" "AI Engineer" Boston (via twitter.com/search-advanced, filter: Latest, Location if available)
+```
+
+### X-ray
+```
+site:x.com "open to work" OR "actively looking" "AI Engineer" OR "ML Engineer"
+```
+
+### Find contact info in bio or pinned tweets
+```
+site:x.com "AI Engineer" "open to work" (email OR gmail.com OR "DM me")
+```
+**Example result:** A pinned tweet reading "Recently laid off, looking for ML Engineer roles — reach me at jane@gmail.com" — extremely high-intent, contact-ready lead.
+
+### Hashtags worth searching directly on Twitter
+`#OpenToWork #MLTwitter #TechLayoffs #HireMe #AIJobs`
+
+---
+
+## 3. GitHub — "Hire Me" Signals
+
+Some engineers add availability directly to their GitHub bio or pinned repo README.
+
+```
+site:github.com "open to work" OR "available for hire" "machine learning" OR "AI Engineer" Boston
+```
+```
+site:github.com/[username] "hire me" (in bio search via GitHub UI: in:bio "hire me")
+```
+GitHub native:
+```
+in:bio "open to work" location:Boston
+in:bio "available for hire" location:Boston
+```
+**Example use:** Some candidates literally write "🟢 Open to work" as an emoji-flagged bio line — searching the phrase catches this directly.
+
+---
+
+## 4. Reddit — Layoff/Job-Search Threads
+
+Reddit has active communities where people post "I was laid off, here's my background" with contact info in comments.
+
+```
+site:reddit.com/r/MachineLearning OR site:reddit.com/r/cscareerquestions "laid off" OR "open to work" "AI Engineer"
+```
+Also check dedicated threads: r/layoffs, r/forhire, r/machinelearningjobs — these often have structured "For Hire" posts with a template that includes location, skills, and contact method by design.
+
+---
+
+## 5. AngelList / Wellfound — Explicitly "Actively Looking" by Design
+
+Wellfound candidate profiles have a built-in "actively looking" / response-rate indicator — this is the single most reliable non-LinkedIn source since the entire platform is built around active job search intent. Filter by role + location directly in-platform; no X-ray trick needed.
+
+---
+
+## 6. Indeed / ZipRecruiter Resume Databases
+
+These platforms are inherently "actively seeking" pools since posting a resume signals active search.
+```
+site:indeed.com/r "AI Engineer" Boston "immediately available"
+```
+Indeed's own resume search (with a recruiter account) lets you filter by "Updated within X days" — a strong proxy for active search, since people refresh resumes when job hunting.
+
+---
+
+## 7. Facebook Groups (often overlooked, but real for tech-adjacent job searches)
+
+Local/niche Facebook groups (e.g. "Boston Tech Jobs," "AI/ML Job Board") often have members post "actively looking, contact me at..." with full contact info, since Facebook groups are less spam-guarded than LinkedIn.
+```
+site:facebook.com/groups "open to work" OR "actively seeking" "AI Engineer" Boston
+```
+
+---
+
+## 8. Discord/Slack Community "Job Seeking" Channels
+
+Communities like MLOps Community, Latent Space Discord, and various Boston tech Slacks often have a dedicated `#job-seeking` or `#open-to-work` channel where members post directly with contact info, since the whole channel exists for that purpose. Requires joining the community (not X-ray-able), but is one of the highest-intent sources available — worth the time investment for a hard-to-fill role.
+
+---
+
+## 9. General Search Techniques to Pull Contact Info Directly
+
+### Email pattern search
+```
+"AI Engineer" Boston "@gmail.com" OR "@outlook.com" "open to work"
+```
+**Why this works:** People who want inbound contact without a middleman often just paste their personal email directly into a public post/bio rather than relying on platform messaging.
+
+### Phone number pattern (less common publicly, use judgment)
+```
+"AI Engineer" Boston "available immediately" (contact OR call OR text)
+```
+Phone numbers are rarer in public posts due to spam concerns — email is far more common as the self-posted contact method.
+
+### Combine job title + urgency language + contact signal
+```
+"machine learning engineer" ("immediately available" OR "actively interviewing") (email OR "reach out" OR "DM me") Boston
+```
+
+---
+
+## 10. Quick Reference — Best Source by Intent Signal
+
+| Signal type | Best platform | Method |
+|---|---|---|
+| Explicit "Open to Work" badge | LinkedIn | Native filter (most reliable) |
+| Layoff/job-search announcement post | Twitter/X, LinkedIn posts | X-ray + native advanced search |
+| "Hire me" in bio | GitHub | `in:bio` search |
+| Structured "for hire" post w/ contact | Reddit (r/forhire, r/layoffs) | Subreddit search |
+| Platform-wide active search default | Wellfound/AngelList | No trick needed — built-in |
+| Resume freshness as proxy | Indeed/ZipRecruiter | "Updated within X days" filter |
+| High-intent, contact-ready | Discord/Slack `#job-seeking` channels | Join community, browse channel |
+| Local/niche urgency posts | Facebook groups | X-ray site:facebook.com/groups |
+
+---
+
+## 11. Practical Notes & Compliance Caution
+
+- **Prioritize native "open to work" signals over inferred ones** — a LinkedIn badge or Wellfound "actively looking" flag is a clearer, more current signal than an old tweet or stale bio line.
+- **Verify before reaching out** — someone who posted "open to work" 8 months ago may already be placed; always sanity-check recency (post date, LinkedIn activity) before messaging.
+- **When someone posts contact info publicly to be reached, that's an invitation** — reaching out via that channel is generally fine. But scraping contact info from a context where it wasn't meant for recruiter outreach (e.g. a personal Facebook post unrelated to job hunting) crosses into territory you should avoid — stick to posts/bios where the person is clearly signaling openness to being contacted about jobs.
+- **First message should acknowledge the context respectfully** — e.g. "Saw you mentioned you're actively looking" reads better than pretending you found them randomly, and builds trust faster with someone who's likely fielding multiple recruiter messages already.
+
+
+
+# Resume & Portfolio Search Deep Dive — All File Formats & Link Techniques
+### Use case: AI Engineer, Boston MA, Mid-Level, On-Site
+
+## 1. Filetype Search Basics
+
+Google/Bing support `filetype:` to restrict results to a specific document format. This is the core operator for finding publicly posted resumes and portfolios that aren't indexed as normal web pages.
+
+```
+filetype:pdf "AI Engineer" resume Boston
+filetype:doc OR filetype:docx "AI Engineer" resume Boston
+```
+
+---
+
+## 2. Resume Search — By File Format
+
+### PDF resumes
+```
+filetype:pdf "resume" "AI Engineer" OR "ML Engineer" Boston Python PyTorch
+```
+**Example result:** A PDF hosted on a personal site or old job-fair upload with resume text — often includes full work history, education, and contact info not visible on gated platforms.
+
+### Word documents (.doc/.docx)
+```
+filetype:doc OR filetype:docx "AI Engineer" resume Boston
+```
+**Note:** Word resumes are less common publicly (usually behind portals), but occasionally surface from personal sites, university career pages, or old forum uploads.
+
+### Google Docs (public/shared links)
+```
+site:docs.google.com "resume" "AI Engineer" Boston
+```
+**Example use:** Some candidates share a public Google Doc resume link on Twitter/LinkedIn/portfolio sites — this catches those directly.
+
+### Plain text / Markdown resumes (common among engineers)
+```
+site:github.com filetype:md "resume" OR "CV" "AI Engineer"
+```
+**Example result:** Engineers increasingly keep a `resume.md` or `CV.md` in a GitHub repo — this is a high-signal, easy-to-read format and often more current than a static PDF.
+
+### PowerPoint "resume decks" (less common, but exists in design/PM-adjacent AI roles)
+```
+filetype:ppt OR filetype:pptx "AI Engineer" resume
+```
+
+### RTF (rare, but occasionally from older postings)
+```
+filetype:rtf "AI Engineer" resume Boston
+```
+
+---
+
+## 3. Combine Multiple Filetypes in One Query
+```
+(filetype:pdf OR filetype:doc OR filetype:docx) "AI Engineer" resume Boston Python
+```
+Broader net — good for a first sweep before narrowing to a specific format.
+
+---
+
+## 4. Portfolio Site Search
+
+### General portfolio hunting
+```
+intitle:"AI Engineer" OR intitle:"ML Engineer" portfolio Boston site:*.dev OR site:*.me OR site:*.io
+```
+
+### Project write-up style portfolios (deeper technical content)
+```
+"case study" OR "project writeup" "LLM" OR "fine-tuning" Boston
+```
+**Example result:** A blog-style page walking through a specific ML project end-to-end — strong signal of both technical depth and communication ability.
+
+### Notion-hosted portfolios (increasingly common)
+```
+site:notion.site "AI Engineer" OR "ML Engineer" portfolio
+```
+
+### Carrd / simple one-page portfolio builders
+```
+site:carrd.co "AI Engineer" OR "machine learning"
+```
+
+---
+
+## 5. Link Search — Finding a Candidate's Full Web Footprint
+
+Once you find one anchor point (a GitHub, a LinkedIn, or an email), use these to map out everything else linked to them:
+
+### Reverse-search a GitHub username across the web
+```
+"[exact-github-username]" -site:github.com
+```
+**Example use:** If a candidate's GitHub username is `janedoe-ml`, this surfaces every other place that same handle appears (Twitter, personal site, Dev.to, Medium) — since engineers often reuse handles.
+
+### Reverse-search an email or name variant
+```
+"jane.doe" "AI Engineer" -site:linkedin.com
+```
+
+### Find all links out from a known portfolio page
+Use a tool like Ahrefs' free backlink checker or simply view page source (Ctrl+U) → search for `href=` to manually pull every outbound link (GitHub, LinkedIn, Twitter, blog) listed on a candidate's personal site.
+
+### Find inbound links TO a candidate's site (who's citing/referencing them)
+```
+link:[candidate-portfolio-url]
+```
+(Google deprecated full support for this, but Bing and tools like Ahrefs/Moz still surface it — useful for finding who's referenced their work, e.g. conference pages, GitHub README credits.)
+
+---
+
+## 6. University Career Page & Repository Search
+
+```
+site:*.edu filetype:pdf "AI Engineer" OR "machine learning" resume OR CV Boston
+```
+**Example use:** Some university career centers or lab pages publicly post student/alumni project PDFs or CVs (e.g. MIT CSAIL student pages, Northeastern Khoury capstone showcases).
+
+### Thesis/capstone repositories (often public PDFs)
+```
+site:dspace.mit.edu OR site:repository.library.northeastern.edu "machine learning" filetype:pdf
+```
+
+---
+
+## 7. Job Board Cached Resumes
+
+Some boards expose resume snippets to search engines even without a login:
+```
+site:indeed.com/r filetype:pdf "AI Engineer" Boston
+site:ziprecruiter.com/candidate "AI Engineer" Boston
+```
+
+---
+
+## 8. Combining Filetype + Site + Keyword (highest precision)
+
+```
+site:github.io filetype:pdf "resume" "AI Engineer" Boston
+```
+**Example use:** Finds a resume PDF specifically hosted on someone's GitHub Pages portfolio — very high-signal since it confirms both technical hosting savvy and a maintained personal brand.
+
+---
+
+## 9. Quick Reference — All Format/Search Combinations
+
+| Format | Operator | Example |
+|---|---|---|
+| PDF | `filetype:pdf` | `filetype:pdf "AI Engineer" resume Boston` |
+| Word | `filetype:doc` / `filetype:docx` | `filetype:docx "AI Engineer" resume` |
+| Markdown (GitHub) | `filetype:md` | `site:github.com filetype:md "resume"` |
+| Google Docs | `site:docs.google.com` | `site:docs.google.com "resume" "AI Engineer"` |
+| PowerPoint | `filetype:ppt` / `filetype:pptx` | `filetype:pptx "AI Engineer" resume` |
+| Notion portfolio | `site:notion.site` | `site:notion.site "ML Engineer" portfolio` |
+| Carrd portfolio | `site:carrd.co` | `site:carrd.co "AI Engineer"` |
+| University PDF/CV | `site:*.edu filetype:pdf` | `site:*.edu filetype:pdf "machine learning" CV` |
+| Reverse handle search | `"[username]" -site:[platform]` | `"janedoe-ml" -site:github.com` |
+| Inbound links | `link:[url]` (Bing/Ahrefs) | `link:janedoe.dev` |
+
+---
+
+## 10. Practical Tricks & Cautions
+
+- **Stack format + site + keyword together** for the highest precision — three-part queries return far fewer, far better results than any single operator alone.
+- **Reused usernames are gold** — once you find a GitHub or Twitter handle, searching that exact string (in quotes, minus the known site) across the web is often faster than guessing new keyword combos.
+- **PDF resumes found this way are often outdated** — always verify current role/status via LinkedIn or direct outreach before assuming the PDF reflects their current situation.
+- **Respect privacy/compliance** — publicly indexed doesn't always mean intended for recruiter outreach (e.g. a student capstone PDF). Use judgment, and when in doubt, reach out via a professional channel (LinkedIn/email) rather than referencing that you found a specific personal PDF.
+- **Google's filetype index isn't exhaustive** — Bing sometimes surfaces different PDFs/docs than Google for the same query; run both if a candidate profile is high-priority.
