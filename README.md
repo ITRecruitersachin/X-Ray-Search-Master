@@ -4993,3 +4993,139 @@ site:github.io filetype:pdf "resume" "AI Engineer" Boston
 - **PDF resumes found this way are often outdated** — always verify current role/status via LinkedIn or direct outreach before assuming the PDF reflects their current situation.
 - **Respect privacy/compliance** — publicly indexed doesn't always mean intended for recruiter outreach (e.g. a student capstone PDF). Use judgment, and when in doubt, reach out via a professional channel (LinkedIn/email) rather than referencing that you found a specific personal PDF.
 - **Google's filetype index isn't exhaustive** — Bing sometimes surfaces different PDFs/docs than Google for the same query; run both if a candidate profile is high-priority.
+
+
+
+# Sourcing Cheat Codes — Advanced, Lesser-Known Techniques (2026)
+### The tricks that separate top 10% sourcers from everyone else
+
+---
+
+## 1. The Proximity Operator (`AROUND(N)`) — Most Recruiters Don't Know This Exists
+
+Instead of just `AND`, use `AROUND(N)` on platforms that support it (Google, some ATS search):
+```
+"Business Analyst" AROUND(5) "SQL"
+```
+<cite index="29-1">This returns results where "Business Analyst" and "SQL" appear within five words of each other — suggesting the candidate actually uses SQL in their BA role, not just someone who happens to mention both terms separately in a long, unrelated profile.</cite>
+
+**Apply to your AI Engineer search:**
+```
+"AI Engineer" AROUND(6) "PyTorch"
+```
+This filters out profiles where "AI Engineer" is in the headline and "PyTorch" is buried in an unrelated old job — much higher precision than plain `AND`.
+
+---
+
+## 2. LinkedIn Events Attendee Mining
+
+<cite index="24-1">Most recruiters stick to basic keyword searches inside LinkedIn Recruiter, using maybe three or four of the platform's 40+ advanced filters — but Events attendee mining is a hugely underused technique.</cite>
+
+**How it works:** Search LinkedIn Events for AI/ML conferences, webinars, or meetups (even virtual ones). Click "Attendees" on the event page — this surfaces a list of people who registered/attended, many of whom aren't easily found via keyword search because their profile doesn't scream "AI Engineer" but their event attendance proves active interest and engagement in the space.
+
+---
+
+## 3. SeekOut Assist / "Paste-the-JD" Boolean Auto-Generation
+
+<cite index="23-1">SeekOut Assist lets you paste a full job description and auto-builds Boolean and filter strings from it — instead of manually constructing search logic.</cite> If you have access to SeekOut (or similar tools with this feature), this cuts search-string-building time dramatically, especially for roles with dense technical requirements.
+
+**Workflow hack even without the tool:** paste your JD into Claude or another AI assistant and ask it to extract must-have vs. nice-to-have skills, then build the Boolean string yourself — same effect, no paid tool required.
+
+---
+
+## 4. ATS "Rediscovery" — Your Own Database Is a Goldmine
+
+<cite index="23-1">Modern sourcing platforms now offer "ATS rediscovery" on systems like Greenhouse, Lever, and Workday — surfacing past applicants who were rejected for a different role but match a new one.</cite>
+
+**Why this matters:** Every recruiter sits on a pile of "not right fit for Role A" candidates who are often a perfect fit for Role B six months later. Most never go back and mine this. Build a habit: before starting fresh outbound sourcing, search your own ATS/CRM history first — it's free, warm, and often faster than cold outreach.
+
+---
+
+## 5. The GitHub `.patch` Method (Still Works in 2026)
+
+<cite index="26-1">This is a classic "recruiter secret" that still works well in 2026 for finding email addresses on GitHub.</cite>
+```
+github.com/[username]/[repo]/commit/[commit-hash].patch
+```
+Appending `.patch` to any commit URL shows the raw patch file, which includes the committer's name and email in the header — even when it's not visible on their public profile (unless they've enabled GitHub's private email setting).
+
+---
+
+## 6. Skills-First Boolean (Instead of Title-First)
+
+<cite index="24-1">Diversity sourcing and hard-to-find talent both benefit from skills-based filtering — qualified candidates with non-traditional career trajectories and less-recognizable title progressions surface more readily when skills drive the query rather than titles, and Boolean-savvy recruiters using this approach fill positions roughly 23% faster.</cite>
+
+**Instead of:**
+```
+"AI Engineer" AND Boston
+```
+**Try:**
+```
+(PyTorch OR TensorFlow) AND ("fine-tuning" OR "LLM" OR "RAG") AND Boston
+```
+This catches people whose title is "Software Engineer" or "Backend Developer" but who are functionally doing AI Engineering work — a pool your competitors miss because they're anchored to the title.
+
+---
+
+## 7. The 13% InMail Floor Rule
+
+<cite index="24-1">Even with every sourcing trick in play, LinkedIn has structural constraints no search technique can fix — response rate benchmarks like the "13% InMail floor" exist as a baseline to gauge whether your messaging (not your sourcing) is the bottleneck.</cite>
+
+**Practical use:** If your InMail response rate is consistently below ~13%, the problem usually isn't who you're finding — it's how you're messaging them. Revisit subject lines and personalization before assuming you need more/better search strings.
+
+---
+
+## 8. Reverse-Engineer Competitor Job Postings
+
+Search for open AI Engineer postings at companies you want to poach from — the JD itself tells you their tech stack, team structure, and even internal tool names (e.g., proprietary platform names) you can then use as Boolean keywords to find their current employees:
+```
+"[proprietary tool name from their JD]" Boston site:linkedin.com/in
+```
+
+---
+
+## 9. "People Also Viewed" / Similar Profile Chaining
+
+On LinkedIn, once you find one strong candidate, check the "People Also Viewed" or "Similar Profiles" section on their profile page — this is LinkedIn's own algorithm doing lookalike sourcing for you, free, and often surfaces candidates your Boolean string missed entirely due to phrasing differences.
+
+---
+
+## 10. Hybrid Boolean + AI Workflow (The 2026 Standard)
+
+<cite index="29-1">The most effective sourcing teams in 2026 don't choose between Boolean and AI — they use both: Boolean search handles the structured logic (must-have skills, location constraints, exact titles), while AI handles the unstructured intelligence (skill equivalencies, career trajectory signals, and title fragmentation).</cite>
+
+**Practical workflow:** Use Boolean for your first, precise pass (fast, transparent, free). Then run the same brief through an AI/semantic tool for a second, broader pass — the AI catches title-fragmented and synonym-based matches Boolean structurally can't (e.g., "Growth PM" vs. "Product Manager" style title drift, which is just as real in AI/ML titles: "Applied Scientist" vs. "AI Engineer" vs. "ML Platform Engineer").
+
+---
+
+## 11. Discord/Slack "Job-Seeking" Channel Scraping (Manual, High-Intent)
+
+Beyond just joining communities passively — actively search within Discord servers (using Discord's own search) for messages containing "open to work," "looking for," or "available" posted in job-related channels. This requires membership but yields extremely high-intent, low-competition leads since most recruiters don't bother joining niche AI/ML Discords at all.
+
+---
+
+## 12. The "Stale Job Posting" Signal
+
+Search for AI Engineer job postings from competitor companies that have been live for 60+ days — a long-open posting often signals a hard-to-fill role or a struggling internal recruiting effort, meaning any candidates who applied there and got no response are now warm, available, and easy to re-engage with a better opportunity:
+```
+"AI Engineer" Boston site:linkedin.com/jobs (posted 60+ days — check via LinkedIn's date filter)
+```
+
+---
+
+## Quick Reference — New Techniques at a Glance
+
+| Cheat code | Where to use it | Why it works |
+|---|---|---|
+| `AROUND(N)` proximity | Google, some ATS search | Filters false-positive keyword matches |
+| Events attendee mining | LinkedIn Events | Surfaces engaged people missed by keyword search |
+| JD-to-Boolean auto-build | SeekOut Assist / AI assistant | Saves manual string-building time |
+| ATS rediscovery | Your own ATS/CRM | Free, warm candidates you already have |
+| `.patch` method | GitHub | Finds emails hidden from public profile |
+| Skills-first Boolean | Any Boolean-capable platform | Surfaces non-traditional-title candidates faster |
+| 13% InMail floor | LinkedIn outreach | Diagnoses messaging vs. sourcing problems |
+| Competitor JD reverse-engineering | Job boards | Surfaces internal tool names as search keywords |
+| "People Also Viewed" chaining | LinkedIn profiles | Free lookalike sourcing |
+| Hybrid Boolean + AI | Full stack | Combines precision with title/synonym coverage |
+| Discord job-channel scraping | Niche communities | High-intent, low-competition leads |
+| Stale job posting signal | Competitor job boards | Surfaces warm, available candidates |
