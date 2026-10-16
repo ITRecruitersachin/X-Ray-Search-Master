@@ -5129,3 +5129,946 @@ Search for AI Engineer job postings from competitor companies that have been liv
 | Hybrid Boolean + AI | Full stack | Combines precision with title/synonym coverage |
 | Discord job-channel scraping | Niche communities | High-intent, low-competition leads |
 | Stale job posting signal | Competitor job boards | Surfaces warm, available candidates |
+
+
+---
+---
+---
+
+X-Ray Search Handbook
+
+A complete reference for **X-ray search**: using Google, Bing and other search engines with Boolean operators to search *inside* a single website. Covers operators, a modular string builder, synonym libraries, 150+ ready-to-use strings for 100+ platforms, role packs, advanced techniques and ethics.
+
+> Example role used throughout: **Java Developer, Bengaluru, Spring Boot, Microservices**. Swap in your own title, skills and location.
+
+## Table of contents
+
+| # | Document | What's inside |
+|---|---|---|
+| 1 | [Fundamentals](docs/01-fundamentals.md) | What X-ray search is, how it works, anatomy of a string |
+| 2 | [Search engine support](docs/02-search-engine-support.md) | Which operators work on Google, Bing, DuckDuckGo, Brave, Yandex |
+| 3 | [Operator reference](docs/03-operator-reference.md) | Every operator, precedence rules, limits |
+| 4 | [Modular builder](docs/04-modular-builder.md) | Blocks A-M and the master formula |
+| 5 | [Synonym libraries](docs/05-synonym-libraries.md) | Titles, locations, skills, exclusions |
+| 6 | [Platforms](docs/platforms/) | X-ray strings per platform (see below) |
+| 7 | [Role packs](docs/07-role-packs.md) | Copy-paste strings for common roles |
+| 8 | [Advanced techniques](docs/08-advanced-techniques.md) | Slicing, proximity, reverse X-ray, verification |
+| 9 | [Troubleshooting](docs/09-troubleshooting.md) | Fixes for common problems |
+| 10 | [Ethics and law](docs/10-ethics-and-law.md) | Responsible use, DPDP, GDPR |
+
+### Platform guides
+
+- [LinkedIn](docs/platforms/01-linkedin.md)
+- [Developer and technical platforms](docs/platforms/02-developer.md)
+- [Design, creative and social media](docs/platforms/03-creative-social.md)
+- [Academic, freelance, job portals, business data](docs/platforms/04-academic-freelance-jobs-business.md)
+- [Resumes, events, regional and non-technical](docs/platforms/05-resumes-events-regional-nontech.md)
+
+## 30-second cheat card
+
+```
+site:domain/path      -> where
+"phrase"              -> exact match
+( A OR B )            -> alternatives
+-term                 -> exclude (NOT)
+intitle:"x"           -> in page title (job title)
+inurl:x               -> in URL
+intext:"x"            -> in body (important skill)
+filetype:pdf          -> documents / resumes
+AROUND(n)             -> proximity
+*                     -> wildcard
+after:YYYY-MM-DD      -> recent
+```
+
+**Universal template**
+
+```
+site:[PLATFORM] ("[TITLE 1]" OR "[TITLE 2]") "[MUST SKILL 1]" "[MUST SKILL 2]" ("[SKILL A]" OR "[SKILL B]") ("[LOCATION 1]" OR "[LOCATION 2]") -[exclude1] -[exclude2]
+```
+
+## Notes
+
+- Platforms change indexing and URL patterns often. Test every string and adjust.
+- Stack Overflow Jobs/Talent was discontinued in 2022. Twitter now lives at `x.com`.
+- Use only public data and follow each site's terms and local law (see [Ethics](docs/10-ethics-and-law.md)).
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md). Pull requests with new platforms, fixes for broken patterns and regional additions are welcome.
+
+## License
+
+[MIT](LICENSE)
+
+# 1. Fundamentals
+
+## 1.1 What X-ray search is
+
+X-ray search means using a **general web search engine** (Google, Bing, DuckDuckGo, Brave, Yandex) with the `site:` operator and Boolean logic to search **inside one website or one section of it**. It "sees through" the site's own search box and queries the search engine's index of that site's public pages.
+
+Used for:
+- Recruiting and sourcing (profiles, resumes, portfolios)
+- Lead generation and sales prospecting
+- Competitive and market research
+- Journalism and OSINT
+- Academic and expert finding
+
+## 1.2 Why it works
+
+| Reason | Explanation |
+|---|---|
+| Site search is weak | Many sites have limited search, no Boolean, or paywalled filters |
+| Search engines index body text | Phrases buried in a profile can be matched |
+| Boolean is more expressive | Grouping, exclusion and proximity are rarely offered by site search |
+| URL structure is a filter | `linkedin.com/in/` means profiles only, `linkedin.com/jobs/` means jobs only |
+| Cross-site pivoting | The same person can be found across GitHub, Medium and a personal site |
+
+## 1.3 How it works under the hood
+
+1. **Crawl:** the engine's bot fetches public pages.
+2. **Index:** text, title, URL, links and metadata are stored.
+3. **Query parse:** your operators (`site:`, `intitle:`, quotes, `-`) become filters on those fields.
+4. **Rank:** matching pages are ordered by relevance.
+5. **Display:** you see title, URL and a snippet.
+
+In practice:
+- Only **public and indexed** pages appear. Login-walled content never shows.
+- Results can be **stale**. The profile may have changed since it was crawled.
+- Sites can limit indexing (`robots.txt`, `noindex`, login walls), so coverage varies.
+- The **snippet** often shows your keywords in context, so you can screen without opening.
+- You see a **sample** of the web, not the whole database.
+
+## 1.4 Anatomy of every X-ray string
+
+```
+[WHERE]  [WHO/WHAT]  [MUST]   [OPTIONAL]  [GEO]      [REMOVE NOISE]
+site:    title       skills   alt skills  location   -exclusions
+```
+
+# 2. Search Engine Operator Support
+
+Not every engine supports every operator. Test strings on more than one.
+
+| Operator | Google | Bing | DuckDuckGo | Brave | Yandex |
+|---|---|---|---|---|---|
+| `site:` | Yes | Yes | Yes | Yes | Yes |
+| `"exact phrase"` | Yes | Yes | Yes | Yes | Yes |
+| `AND` | Implicit | Yes | Implicit | Implicit | `&&` |
+| `OR` / `\|` | Yes | Yes | Yes | Limited | `\|` |
+| `-` exclude | Yes | Yes | Yes | Yes | Yes |
+| `NOT` | No (use `-`) | Yes | No | No | No |
+| `( )` grouping | Yes | Yes | Partial | Partial | Yes |
+| `intitle:` | Yes | Yes | Yes | Yes | `title:` |
+| `allintitle:` | Yes | No | No | No | No |
+| `inurl:` | Yes | Yes | Yes | Yes | `url:` |
+| `intext:` | Yes | `inbody:` | No | `inbody:` | No |
+| `allintext:` | Yes | No | No | No | No |
+| `filetype:` / `ext:` | Yes | Yes | Yes | Yes | `mime:` |
+| `*` wildcard | Yes | Limited | Limited | No | Yes |
+| Proximity | `AROUND(n)` | `near:n` | No | No | `/n` |
+| Date filtering | `before:` `after:` | Date tools | UI filter | UI filter | UI filter |
+| `language:` | UI settings | `language:` | UI | `lang:` | `lang:` |
+| `loc:` / region | UI | `loc:` | UI | `loc:` | UI |
+| `cache:` | Removed | Removed | No | No | No |
+| `related:` | Largely dead | No | No | No | No |
+
+## Quick advice
+
+- **Google:** best coverage and the most operators. Use it first.
+- **Bing:** use for `NOT`, `near:`, `inbody:`, `contains:`, and because it often returns *different* results.
+- **DuckDuckGo and Brave:** good second opinions, sometimes surface profiles Google hides.
+- **Yandex:** useful for CIS and European sources.
+
+Behaviour changes over time. Always verify on the engine you use.
+
+
+# 3. Complete Operator Reference
+
+## 3.1 Core operators
+
+| Operator | What it does | Example |
+|---|---|---|
+| `site:domain` | Restrict to domain | `site:github.com` |
+| `site:domain/path` | Restrict to a URL section | `site:linkedin.com/in/` |
+| `site:*.domain` | Subdomains | `site:*.linkedin.com/in/` |
+| `site:.in` | Restrict to a TLD | `site:.in "resume"` |
+| `"phrase"` | Exact match | `"machine learning engineer"` |
+| `OR` / `\|` | Alternatives | `Bangalore OR Bengaluru` |
+| `AND` | Required (implicit in Google) | `java AND kafka` |
+| `-term` | Exclude word | `-intern` |
+| `-"phrase"` | Exclude phrase | `-"talent acquisition"` |
+| `-site:` | Exclude a site | `-site:linkedin.com` |
+| `( )` | Group logic | `(java OR kotlin) (aws OR azure)` |
+| `*` | Wildcard word | `"senior * engineer"` |
+
+## 3.2 Position operators
+
+| Operator | Matches in | Use for |
+|---|---|---|
+| `intitle:` | Page title | **Job title** (profile page titles often contain name and headline) |
+| `allintitle:` | All words in title | Strict title match (cannot be mixed with other operators) |
+| `inurl:` | URL | Section filters (`/resume`, `/portfolio`, `/in/`) |
+| `allinurl:` | All words in URL | Rare |
+| `intext:` | Page body | Forcing a term into the body, not just the title |
+| `allintext:` | All words in body | Strict body match |
+| `inanchor:` | Link text | Pages linked with certain text |
+
+## 3.3 Content and time operators
+
+| Operator | Example | Use |
+|---|---|---|
+| `filetype:pdf` | `filetype:pdf "resume" "java"` | Resumes, CVs, papers, slides |
+| `ext:docx` | `ext:docx "curriculum vitae"` | Word files |
+| `after:YYYY-MM-DD` | `after:2026-01-01` | Recent pages |
+| `before:YYYY-MM-DD` | `before:2025-12-31` | Older pages |
+| `AROUND(n)` | `"python" AROUND(4) "django"` | Skill used with a framework |
+| `define:` | `define:x-ray` | Definitions |
+
+## 3.4 Precedence and grouping rules
+
+- Google treats a space as AND.
+- `OR` binds tightly to its neighbours, so **always wrap OR groups in parentheses**.
+  - Wrong: `java spring OR boot`
+  - Right: `java (spring OR "spring boot")`
+- `-` must touch the term with no space: `-intern`, not `- intern`.
+- No space after the colon: `site:github.com`, not `site: github.com`.
+- Keep `OR` and `AND` in capitals.
+
+## 3.5 Query length and result limits
+
+- Google truncates very long queries (historically about 32 words, practical limit varies). If part of your string seems ignored, split it.
+- Results are capped at a few hundred per query, so **slice by location, company or skill**.
+- Use "Tools > Any time" or `after:` to bias towards recent pages.
+
+# 4. The Modular Builder
+
+Build every string from interchangeable blocks.
+
+## Block A: Platform
+```
+site:linkedin.com/in/
+```
+
+## Block B: Job title (with synonyms)
+```
+("Java Developer" OR "Java Engineer" OR "Backend Developer" OR "Backend Engineer" OR "Software Engineer")
+```
+Title-only variant (page title must contain it):
+```
+intitle:"Java Developer"
+```
+
+## Block C: Must-have skills (each required)
+```
+"Spring Boot" "Microservices" "REST"
+```
+
+## Block D: Important skills (at least one of a group)
+```
+("Kafka" OR "RabbitMQ" OR "ActiveMQ")
+("AWS" OR "Azure" OR "GCP")
+```
+
+## Block E: Nice-to-have
+Search engines rank pages with more matching terms higher, so adding nice-to-haves as plain keywords nudges better matches up without making them mandatory. If they must be mandatory, move them to Block C.
+
+## Block F: Location
+```
+("Bengaluru" OR "Bangalore" OR "Bengaluru, Karnataka" OR "Bangalore Urban")
+```
+Greater-region variant:
+```
+("Bengaluru" OR "Bangalore" OR "Karnataka" OR "Whitefield" OR "Electronic City")
+```
+
+## Block G: Experience
+```
+("5 years" OR "6 years" OR "7 years" OR "5+ years" OR "6+ years" OR "7+ years")
+```
+
+## Block H: Seniority
+Include: `("Senior" OR "Lead" OR "Principal" OR "Staff" OR "Architect")`
+Exclude: `-intern -trainee -fresher -student -"entry level" -junior`
+
+## Block I: Employer filters
+Include: `("Flipkart" OR "Swiggy" OR "Razorpay" OR "PhonePe" OR "Zomato")`
+Exclude: `-"Infosys" -"TCS" -"Wipro"`
+
+## Block J: Education
+```
+("IIT" OR "NIT" OR "BITS Pilani" OR "IIIT" OR "IISc")
+```
+
+## Block K: Noise removal (universal)
+```
+-intitle:"jobs" -intitle:"hiring" -intitle:"profiles" -inurl:"/dir/" -inurl:"/pub/dir/" -"recruiter" -"talent acquisition" -"HR"
+```
+
+## Block L: Contact discovery
+```
+("@gmail.com" OR "@outlook.com" OR "@yahoo.com") ("+91" OR "mobile" OR "phone")
+```
+
+## Block M: Recency
+```
+after:2025-01-01
+```
+
+## Master formula
+```
+[A] [B] [C] [D] [F] [K]
+```
+
+Assembled example:
+```
+site:linkedin.com/in/ ("Java Developer" OR "Java Engineer" OR "Backend Engineer") "Spring Boot" "Microservices" ("Kafka" OR "RabbitMQ") ("AWS" OR "Azure") ("Bengaluru" OR "Bangalore") -intern -fresher -recruiter -inurl:"/dir/"
+```
+
+# 5. Synonym Libraries
+
+## 5.1 Title synonyms
+
+| Role | Variants to OR together |
+|---|---|
+| Software Engineer | "Software Engineer" "Software Developer" "SDE" "Programmer" "Member of Technical Staff" "MTS" |
+| Backend | "Backend Developer" "Backend Engineer" "Server-side" "API Developer" |
+| Frontend | "Frontend Developer" "Front-end Engineer" "UI Developer" "React Developer" |
+| Full stack | "Full Stack Developer" "Fullstack Engineer" "Full-stack" |
+| Data Scientist | "Data Scientist" "ML Scientist" "Applied Scientist" "Research Scientist" |
+| ML Engineer | "Machine Learning Engineer" "ML Engineer" "AI Engineer" "MLOps Engineer" |
+| Data Engineer | "Data Engineer" "ETL Developer" "Big Data Engineer" "Analytics Engineer" |
+| DevOps | "DevOps Engineer" "SRE" "Site Reliability Engineer" "Platform Engineer" "Cloud Engineer" |
+| QA | "QA Engineer" "SDET" "Test Automation Engineer" "Quality Engineer" |
+| Product Manager | "Product Manager" "Product Owner" "Group Product Manager" "Technical Product Manager" |
+| Designer | "UX Designer" "UI Designer" "Product Designer" "Interaction Designer" |
+| Engineering Manager | "Engineering Manager" "Tech Lead" "Director of Engineering" "VP Engineering" |
+| Sales | "Account Executive" "Sales Manager" "Business Development" "BDM" "Enterprise Sales" |
+| Marketing | "Digital Marketing" "Growth Marketer" "Performance Marketing" "SEO Specialist" |
+| HR / TA | "Recruiter" "Talent Acquisition" "HR Business Partner" "HRBP" "People Partner" |
+| Finance | "Financial Analyst" "FP&A" "Chartered Accountant" "CA" "Controller" |
+| Security | "Security Engineer" "InfoSec" "Cybersecurity Analyst" "Penetration Tester" |
+
+## 5.2 Location synonyms (India)
+
+| City | Variants |
+|---|---|
+| Bengaluru | Bengaluru, Bangalore, Bengaluru Karnataka, Bangalore Urban |
+| Mumbai | Mumbai, Bombay, Navi Mumbai, Thane, Mumbai Metropolitan Region |
+| Delhi NCR | Delhi, New Delhi, Gurgaon, Gurugram, Noida, Ghaziabad, Faridabad |
+| Hyderabad | Hyderabad, Secunderabad, Telangana, HITEC City |
+| Chennai | Chennai, Madras, Tamil Nadu |
+| Pune | Pune, Pimpri-Chinchwad, Maharashtra |
+| Kolkata | Kolkata, Calcutta, West Bengal |
+| Ahmedabad | Ahmedabad, Gandhinagar, Gujarat |
+
+LinkedIn profiles often show labels like "Bengaluru Urban, Karnataka, India" or "Greater Bengaluru Area". Add `"Greater Bengaluru"` if results are thin.
+
+## 5.3 Skill synonyms
+
+| Skill | Variants |
+|---|---|
+| JavaScript | JavaScript, JS, ECMAScript, "ES6" |
+| TypeScript | TypeScript, TS |
+| Kubernetes | Kubernetes, K8s, EKS, GKE, AKS |
+| Machine Learning | "Machine Learning", ML, "Deep Learning", DL |
+| NLP | NLP, "Natural Language Processing", LLM, "Large Language Models" |
+| AWS | AWS, "Amazon Web Services", EC2, S3, Lambda |
+| Azure | Azure, "Microsoft Azure" |
+| CI/CD | "CI/CD", Jenkins, "GitHub Actions", GitLab CI, ArgoCD |
+| SQL | SQL, PostgreSQL, Postgres, MySQL, "SQL Server" |
+| React | React, "React.js", ReactJS |
+| Node | Node, "Node.js", NodeJS |
+| Golang | Golang, Go |
+| .NET | ".NET", "dotnet", "ASP.NET", "C#" |
+
+## 5.4 Exclusion library
+
+| Goal | Exclusion string |
+|---|---|
+| Remove students | `-student -intern -trainee -fresher -"looking for internship"` |
+| Remove recruiters | `-recruiter -"talent acquisition" -"talent partner" -HR -staffing` |
+| Remove job posts | `-intitle:jobs -intitle:hiring -inurl:jobs -inurl:careers` |
+| Remove templates/samples | `-sample -template -format -example -"how to write"` |
+| Remove directories | `-inurl:"/dir/" -inurl:"/pub/dir/"` |
+| Remove consultancies | `-consultancy -consulting -"staffing solutions"` |
+| Remove too-senior titles | `-CTO -CEO -VP -Director -"Vice President"` |
+| Remove tutorials | `-tutorial -course -"learn" -"how to"` |
+
+# 7. Role Packs (Copy and Adapt)
+
+All use LinkedIn profiles and Bengaluru. Replace `site:` to switch platform.
+
+## Java Backend (senior)
+```
+site:linkedin.com/in/ ("Java Developer" OR "Java Engineer" OR "Backend Engineer") ("Senior" OR "Lead" OR "Staff") "Spring Boot" "Microservices" ("Kafka" OR "RabbitMQ") ("AWS" OR "Azure" OR "GCP") ("Bengaluru" OR "Bangalore") -intern -fresher -recruiter -inurl:"/dir/"
+```
+
+## Python / Data Engineer
+```
+site:linkedin.com/in/ ("Data Engineer" OR "Big Data Engineer") "Python" "SQL" ("Spark" OR "PySpark") ("Airflow" OR "dbt") ("Snowflake" OR "Databricks" OR "BigQuery") ("Bengaluru" OR "Bangalore") -intern -recruiter
+```
+
+## Data Scientist / ML
+```
+site:linkedin.com/in/ ("Data Scientist" OR "Machine Learning Engineer" OR "Applied Scientist") "Python" ("TensorFlow" OR "PyTorch") ("NLP" OR "Computer Vision" OR "LLM") ("Bengaluru" OR "Bangalore") -intern -student
+```
+
+## Frontend / React
+```
+site:linkedin.com/in/ ("Frontend Developer" OR "Frontend Engineer" OR "React Developer") "React" "TypeScript" ("Redux" OR "Next.js") ("Bengaluru" OR "Bangalore") -intern -fresher
+```
+
+## DevOps / SRE
+```
+site:linkedin.com/in/ ("DevOps Engineer" OR "SRE" OR "Site Reliability Engineer" OR "Platform Engineer") "Kubernetes" "Terraform" ("AWS" OR "Azure" OR "GCP") ("Jenkins" OR "ArgoCD" OR "GitHub Actions") ("Bengaluru" OR "Bangalore") -intern
+```
+
+## QA / SDET
+```
+site:linkedin.com/in/ ("SDET" OR "QA Automation Engineer" OR "Test Automation Engineer") ("Selenium" OR "Playwright" OR "Cypress") ("Java" OR "Python") "CI/CD" ("Bengaluru" OR "Bangalore") -intern
+```
+
+## Android
+```
+site:linkedin.com/in/ ("Android Developer" OR "Android Engineer") ("Kotlin" OR "Java") ("Jetpack Compose" OR "MVVM") ("Bengaluru" OR "Bangalore") -intern
+```
+
+## iOS
+```
+site:linkedin.com/in/ ("iOS Developer" OR "iOS Engineer") ("Swift" OR "SwiftUI") ("Bengaluru" OR "Bangalore") -intern
+```
+
+## Product Manager
+```
+site:linkedin.com/in/ ("Product Manager" OR "Senior Product Manager" OR "Group Product Manager") ("B2B" OR "SaaS" OR "fintech") ("roadmap" OR "A/B testing") ("Bengaluru" OR "Bangalore") -intern -"associate product manager"
+```
+
+## UX Designer
+```
+site:linkedin.com/in/ ("UX Designer" OR "Product Designer" OR "UI/UX Designer") "Figma" ("user research" OR "design systems") ("Bengaluru" OR "Bangalore") -intern
+```
+
+## Cybersecurity
+```
+site:linkedin.com/in/ ("Security Engineer" OR "Application Security" OR "Cybersecurity Analyst") ("OWASP" OR "penetration testing" OR "SIEM") ("CISSP" OR "CEH" OR "OSCP") ("Bengaluru" OR "Bangalore") -intern
+```
+
+## Engineering Manager / Director
+```
+site:linkedin.com/in/ ("Engineering Manager" OR "Director of Engineering" OR "Head of Engineering") ("Java" OR "Python") ("team of" OR "managed") ("Bengaluru" OR "Bangalore") -intern -recruiter
+```
+
+# 8. Advanced Techniques
+
+## 8.1 Layered refinement workflow
+
+1. **Broad:** `site:linkedin.com/in/ "Java" "Bengaluru"`
+2. Add the title group.
+3. Add must-have skills one by one, checking result count.
+4. Add the OR skill groups.
+5. Add exclusions for whatever junk appears.
+6. Slice by company, school or year to get past the result cap.
+
+## 8.2 Slicing to beat result caps
+
+Run the same string repeatedly with one variable changed:
+```
+site:linkedin.com/in/ "Java" "Spring Boot" "Bengaluru" "Flipkart"
+site:linkedin.com/in/ "Java" "Spring Boot" "Bengaluru" "Swiggy"
+site:linkedin.com/in/ "Java" "Spring Boot" "Bengaluru" "PhonePe"
+```
+
+## 8.3 Proximity search
+```
+site:linkedin.com/in/ "Java" AROUND(3) "Spring Boot" "Bengaluru"
+```
+Bing: `site:linkedin.com/in/ java near:3 "spring boot"`
+
+## 8.4 Wildcards for titles
+```
+site:linkedin.com/in/ "senior * engineer" "Java" "Bengaluru"
+site:linkedin.com/in/ "head of *" "engineering" "Bengaluru"
+```
+
+## 8.5 Mapping a competitor's team
+```
+site:linkedin.com/in/ "Razorpay" ("engineer" OR "developer") "Bengaluru" -recruiter -intern
+```
+Add a department word like `"payments"` or `"platform"` to segment.
+
+## 8.6 Reverse X-ray (who is hiring, who is moving)
+```
+site:linkedin.com/posts/ ("excited to join" OR "happy to announce" OR "joined as") "Java" "Bengaluru" after:2026-08-01
+```
+Finds recent job changers.
+
+## 8.7 Finding people via their content
+```
+site:medium.com "Spring Boot" "microservices" "Bengaluru" -inurl:tag
+site:youtube.com "Kafka tutorial" "Bengaluru"
+site:slideshare.net "Kafka" "Bengaluru"
+```
+Authors and speakers are often high-signal candidates.
+
+## 8.8 Finding personal sites from a name or handle
+```
+"Priya Sharma" "Java" ("Bengaluru" OR "Bangalore") (inurl:about OR inurl:portfolio) -site:linkedin.com
+```
+
+## 8.9 Email pattern discovery (outreach research)
+```
+"@company.com" "engineering" -site:linkedin.com
+site:github.com "@company.com" "Bengaluru"
+filetype:pdf "@company.com" "Java"
+```
+Use the pattern (first.last@, flast@) to understand a company's format. Verify addresses properly and respect consent and anti-spam rules.
+
+## 8.10 Open-source contribution signals
+```
+site:github.com "Bengaluru" "Java" "contributor" "Apache" -inurl:"/issues"
+site:github.com "Spring Boot" "Bengaluru" "stars"
+```
+
+## 8.11 Bing `NOT` and `inbody:`
+```
+site:linkedin.com/in/ java NOT intern NOT fresher inbody:"spring boot" inbody:"bengaluru"
+```
+
+## 8.12 Verification step
+
+Never trust the snippet alone. Open the profile and check:
+- Is the current role current? (Indexed pages can be months old.)
+- Does the location match?
+- Is the skill actually used, or just listed?
+
+## 8.13 Combined must-have + important + eliminate (single line when pasted)
+```
+site:linkedin.com/in/ ("Java Developer" OR "Java Engineer" OR "Backend Engineer") "Spring Boot" "Microservices" ("Kafka" OR "RabbitMQ") ("AWS" OR "Azure") ("Bengaluru" OR "Bangalore" OR "Karnataka") -intern -fresher -trainee -recruiter -"talent acquisition" -inurl:"/dir/"
+```
+
+# 9. Troubleshooting
+
+| Problem | Fix |
+|---|---|
+| Zero results | Remove quotes from the least important terms, drop one location variant, remove exclusions |
+| Too many junk results | Add `intitle:`, exclusions, or require more skills |
+| Only directory pages | Add `-inurl:"/dir/"`, use `/in/` rather than a bare domain |
+| Same people repeatedly | Slice by company, school or a new skill |
+| Operators ignored | Check spacing after the colon, uppercase `OR`, balanced parentheses |
+| Google shows a CAPTCHA | Slow down, avoid automated scraping, or switch to Bing/DuckDuckGo |
+| Old profiles | Add `after:` or use "Tools > Past year" |
+| `NOT` not working | Use `-` on Google, `NOT` on Bing |
+| Strange partial matches | Quote the phrase, Google sometimes treats terms loosely |
+| String too long | Split into two searches (for example by location) |
+
+# 10. Ethics, Law and Limits
+
+- X-ray search only reaches **public** pages. Do not try to bypass logins or paywalls.
+- Check each platform's **terms of service**. Some prohibit automated scraping (manual searching is generally fine).
+- Respect data-protection law such as **India's DPDP Act** and **GDPR** when you store or contact people: have a lawful purpose, be transparent, and honour opt-outs.
+- Do not use X-ray for stalking, harassment, doxxing or discriminatory screening.
+- Keep only the data you need and delete it when done.
+
+This document is general information, not legal advice.
+
+# LinkedIn
+
+LinkedIn restricts indexing, so coverage is partial and changes often. Always test.
+
+| Section | URL pattern | What it finds |
+|---|---|---|
+| Profiles | `linkedin.com/in/` | People |
+| Country profiles | `in.linkedin.com/in/` | People (India subdomain) |
+| Old profile format | `linkedin.com/pub/` | Legacy profiles |
+| Companies | `linkedin.com/company/` | Company pages |
+| Jobs | `linkedin.com/jobs/view/` | Job posts |
+| Posts | `linkedin.com/posts/` | Public posts |
+| Articles | `linkedin.com/pulse/` | Articles |
+| Schools | `linkedin.com/school/` | Education pages |
+| Groups | `linkedin.com/groups/` | Group pages |
+| Showcase | `linkedin.com/showcase/` | Product/brand pages |
+| Learning | `linkedin.com/learning/` | Courses |
+
+## Profiles, basic
+```
+site:linkedin.com/in/ "Java Developer" "Spring Boot" "Bengaluru"
+```
+## Profiles, India subdomain
+```
+site:in.linkedin.com/in/ ("Java Developer" OR "Java Engineer") "Spring Boot" "Microservices"
+```
+## Profiles, title in page title
+```
+site:linkedin.com/in/ intitle:"Java" intitle:"Developer" "Spring Boot" ("Bengaluru" OR "Bangalore")
+```
+## Profiles, specific employers
+```
+site:linkedin.com/in/ ("Flipkart" OR "Swiggy" OR "Razorpay") "Java" ("Bengaluru" OR "Bangalore") -recruiter
+```
+## Profiles, education
+```
+site:linkedin.com/in/ "Java" ("IIT" OR "NIT" OR "BITS") ("Bengaluru" OR "Bangalore")
+```
+## Profiles, former employees of a competitor
+```
+site:linkedin.com/in/ "Former" "Amazon" "Java" "Bengaluru"
+```
+## Profiles, open to work signal
+```
+site:linkedin.com/in/ "open to work" "Java" "Bengaluru"
+```
+## Profiles, exclude noise
+```
+site:linkedin.com/in/ "Java" "Spring Boot" "Bengaluru" -intern -fresher -recruiter -"talent acquisition" -inurl:"/dir/"
+```
+## Profiles, certifications
+```
+site:linkedin.com/in/ "Java" ("Oracle Certified" OR "AWS Certified" OR "Spring Professional") "Bengaluru"
+```
+## Jobs (study competitor hiring)
+```
+site:linkedin.com/jobs/view "Java Developer" "Spring Boot" "Bengaluru" after:2026-09-01
+```
+## Company pages
+```
+site:linkedin.com/company/ ("fintech" OR "payments") "Bengaluru" "Java"
+```
+## Hiring posts
+```
+site:linkedin.com/posts/ ("we are hiring" OR "we're hiring" OR "hiring") "Java" "Bengaluru" after:2026-09-01
+```
+## Posts by job seekers
+```
+site:linkedin.com/posts/ ("open to work" OR "looking for new opportunities") "Java" "Bengaluru"
+```
+## Articles by experts
+```
+site:linkedin.com/pulse "microservices" "Spring Boot"
+```
+## Other professional networks
+```
+site:xing.com/profile "Java Developer" "Bengaluru"
+site:wellfound.com/u/ "Java" "Bengaluru"
+```
+
+
+# Developer and Technical Platforms
+
+## GitHub
+GitHub's own search supports qualifiers like `location:bengaluru language:java`, often better than X-ray. Use X-ray when you need keywords from READMEs or bios.
+
+URL notes: `github.com/username` (profile), `github.com/user/repo` (repo), `gist.github.com` (gists), `username.github.io` (portfolio).
+
+Profiles:
+```
+site:github.com "Bengaluru" "Java" "Spring Boot" -inurl:"/issues" -inurl:"/pull" -inurl:"/blob" -inurl:"/tree" -inurl:"/commit"
+```
+Profiles with public email:
+```
+site:github.com "Bengaluru" "Java" ("@gmail.com" OR "@outlook.com")
+```
+GitHub Pages portfolios:
+```
+site:github.io "Java Developer" "Bengaluru"
+```
+Gists:
+```
+site:gist.github.com "Spring Boot" "Kafka"
+```
+README mentions:
+```
+site:github.com "microservices" "Spring Boot" "Bengaluru" inurl:README
+```
+
+## GitLab / Bitbucket
+```
+site:gitlab.com "Java" "Bengaluru" -inurl:"/-/"
+site:bitbucket.org "Java" "Spring Boot"
+```
+
+## Stack Overflow / Stack Exchange
+```
+site:stackoverflow.com/users "Bengaluru" "Java" "Spring"
+site:stackoverflow.com/users "India" "Java" "Spring Boot" "Kafka"
+site:stackexchange.com/users "Bengaluru" "machine learning"
+```
+Stack Overflow Jobs/Talent was discontinued in 2022.
+
+## Kaggle
+```
+site:kaggle.com "Data Scientist" "Bengaluru" ("Grandmaster" OR "Master" OR "Expert")
+```
+
+## Hugging Face
+```
+site:huggingface.co "NLP" "Bengaluru" -inurl:"/datasets/" -inurl:"/spaces/"
+```
+
+## Blogging platforms
+```
+site:dev.to "Java" "Spring Boot" "Bengaluru"
+site:hashnode.com/@ "Java" "Bengaluru"
+site:medium.com/@ "Java" "microservices" "Bengaluru"
+```
+
+## Competitive programming
+```
+site:leetcode.com/u/ "Bengaluru"
+site:codeforces.com/profile "Bengaluru" "India"
+site:codechef.com/users "India" "Bengaluru"
+site:hackerrank.com/profile "Java" "India"
+site:topcoder.com/members "India"
+site:geeksforgeeks.org/user "Bengaluru" "Java"
+```
+
+## Hackathons and builders
+```
+site:devpost.com "Bengaluru" "Java"
+site:producthunt.com/@ "Bengaluru" "developer"
+```
+
+## Package registries (authors)
+```
+site:npmjs.com "Bengaluru" "react"
+site:pypi.org "Bengaluru" "author"
+site:crates.io "Bengaluru"
+site:mvnrepository.com "Spring"
+```
+
+## Docker Hub
+```
+site:hub.docker.com/u "Bengaluru"
+```
+
+# Design, Creative and Social Media
+
+## Design and creative
+```
+site:behance.net "UI/UX Designer" "Bengaluru" "Figma"
+site:dribbble.com "Product Designer" "Bengaluru"
+site:artstation.com "3D Artist" "Bengaluru"
+site:coroflot.com "Industrial Designer" "India"
+site:500px.com "photographer" "Bengaluru"
+site:soundcloud.com "music producer" "Bengaluru"
+site:vimeo.com "video editor" "Bengaluru"
+site:linktr.ee "UI designer" "Bengaluru"
+```
+
+## X (Twitter)
+```
+site:x.com "Java Developer" "Bengaluru" -inurl:"/status"
+site:twitter.com "Java" "Bengaluru" -inurl:"/status"
+site:x.com "#OpenToWork" "Java" "Bengaluru"
+```
+
+## Facebook
+```
+site:facebook.com "Java Developer" "Bengaluru" -inurl:"/posts/"
+site:facebook.com/groups "Java" "jobs" "Bengaluru"
+```
+
+## Instagram
+```
+site:instagram.com "Graphic Designer" "Bengaluru" "DM for work"
+```
+
+## YouTube
+```
+site:youtube.com/@ "Java tutorials" "Bengaluru"
+site:youtube.com/c "Spring Boot" "India"
+```
+
+## Reddit
+```
+site:reddit.com/user "Java" "Bengaluru"
+site:reddit.com/r/developersIndia "hiring" "Java" "Bengaluru"
+site:reddit.com/r/bangalore "Java" "referral"
+```
+
+## Quora
+```
+site:quora.com/profile "Java" "Bengaluru"
+```
+
+## Pinterest and TikTok
+```
+site:pinterest.com "interior designer" "Bengaluru"
+site:tiktok.com/@ "developer" "Bengaluru"
+```
+
+## Telegram (public channels)
+```
+site:t.me/s "Java jobs" "Bengaluru"
+```
+
+## Substack
+```
+site:substack.com "engineering" "Bengaluru" "microservices"
+```
+
+# Academic, Freelance, Job Portals and Business Data
+
+## Academic and research
+```
+site:scholar.google.com/citations "Machine Learning" ("IISc" OR "Indian Institute of Science")
+site:researchgate.net/profile "NLP" "Bengaluru"
+site:academia.edu "Data Science" "Bengaluru"
+site:orcid.org "Bengaluru" "Machine Learning"
+site:semanticscholar.org/author "NLP" "India"
+site:dblp.org "Indian Institute of Science"
+site:arxiv.org "Bengaluru" "transformer"
+site:patents.google.com "inventor" "Bengaluru" "microservices"
+site:pubmed.ncbi.nlm.nih.gov "Bengaluru" "oncology"
+site:ssrn.com "Bengaluru" "fintech"
+```
+
+## Freelance marketplaces
+```
+site:upwork.com/freelancers "Java" "India"
+site:upwork.com/freelancers/~ "Spring Boot"
+site:fiverr.com "Java developer" "India"
+site:toptal.com/resume "Java" "India"
+site:freelancer.com/u "Java" "India"
+site:peopleperhour.com/freelancer "Java" "India"
+site:guru.com "Java" "India"
+```
+
+## Job portals
+Resume databases are mostly login-walled, so you mainly find job posts and a few public profiles.
+```
+site:naukri.com "Java Developer" "Bengaluru" "Spring Boot"
+site:indeed.com/r "Java Developer" "Bengaluru"
+site:in.indeed.com/viewjob "Java Developer" "Bengaluru"
+site:glassdoor.co.in "Java Developer" "Bengaluru"
+site:foundit.in "Java" "Bengaluru"
+site:shine.com "Java Developer" "Bengaluru"
+site:instahyre.com "Java" "Bengaluru"
+site:wellfound.com/u "Java" "Bengaluru"
+site:wellfound.com/jobs "Java" "Bengaluru"
+site:cutshort.io "Java" "Bengaluru"
+site:hirist.tech "Java" "Bengaluru"
+site:iimjobs.com "Java" "Bengaluru"
+site:monster.com "Java Developer"
+site:careerbuilder.com "Java Developer"
+site:ziprecruiter.com "Java Developer"
+site:dice.com "Java Developer"
+```
+
+## Company, startup and business data
+```
+site:crunchbase.com/person "CTO" "Bengaluru" "SaaS"
+site:crunchbase.com/organization "fintech" "Bengaluru"
+site:tracxn.com "fintech" "Bengaluru"
+site:ycombinator.com/companies "Bengaluru"
+site:g2.com "Spring Boot" "Bengaluru"
+site:glassdoor.co.in/Overview "Bengaluru" "fintech"
+site:ambitionbox.com "Java" "Bengaluru"
+```
+
+## Contact-data sites (public snippets only)
+```
+site:rocketreach.co "Java Developer" "Bengaluru"
+site:zoominfo.com/p "Engineering Manager" "Bengaluru"
+site:signalhire.com "Java" "Bengaluru"
+```
+
+## Company team and leadership pages
+```
+inurl:team "Engineering Manager" "Bengaluru"
+(inurl:about OR inurl:team OR inurl:leadership) "CTO" "Bengaluru" -site:linkedin.com
+```
+
+# Resumes, Events, Regional and Non-Technical
+
+## Resumes and CVs on the open web
+
+PDF resumes:
+```
+filetype:pdf ("resume" OR "curriculum vitae" OR "CV") "Java" "Spring Boot" "Bengaluru" -sample -template -format -"how to"
+```
+Word resumes:
+```
+(filetype:doc OR filetype:docx) ("resume" OR "CV") "Java Developer" "Bengaluru" -sample -template
+```
+Google Docs and Drive:
+```
+site:docs.google.com ("resume" OR "CV") "Java" "Bengaluru"
+site:drive.google.com "resume" "Java"
+```
+Notion public resumes:
+```
+site:notion.site "resume" "Java" "Bengaluru"
+```
+Personal portfolio sites:
+```
+(inurl:resume OR inurl:portfolio OR inurl:about OR inurl:cv) "Java Developer" "Bengaluru" -site:linkedin.com -site:github.com
+```
+Resume with contact details:
+```
+filetype:pdf "Java" "Bengaluru" ("@gmail.com" OR "@outlook.com") ("+91" OR "mobile") -sample -template
+```
+Resume with experience range:
+```
+filetype:pdf "resume" "Java" "Spring Boot" ("5 years" OR "6 years" OR "7 years") "Bengaluru"
+```
+
+## Meetups, conferences and speakers
+```
+site:meetup.com "Java" "Bengaluru"
+site:sessionize.com "Java" "Bengaluru"
+site:speakerdeck.com "Spring Boot"
+site:slideshare.net "Java" "Microservices" "Bengaluru"
+site:eventbrite.com "Java" "Bengaluru"
+site:confengine.com "Bengaluru" "microservices"
+site:lu.ma "Java" "Bengaluru"
+(inurl:speakers OR inurl:speaker) "Java" "Bengaluru" ("Engineer" OR "Architect")
+```
+
+## Regional platforms
+
+| Region | Platform | Example |
+|---|---|---|
+| DACH | Xing | `site:xing.com/profile "Java Entwickler" "Berlin"` |
+| Middle East | Bayt, Naukrigulf | `site:bayt.com "Java Developer" "Dubai"` |
+| Russia/CIS | Habr Career | `site:career.habr.com "Java" "Moscow"` |
+| China | CSDN, Gitee | `site:gitee.com "Java" "Shanghai"` |
+| Japan | Wantedly | `site:wantedly.com "Java" "Tokyo"` |
+| Brazil | Gupy, Catho | `site:gupy.io "Java" "São Paulo"` |
+| Africa | BrighterMonday | `site:brightermonday.co.ke "Java"` |
+
+## Non-technical professions
+
+Sales:
+```
+site:linkedin.com/in/ ("Account Executive" OR "Enterprise Sales") "SaaS" ("Bengaluru" OR "Bangalore") -intern -recruiter
+```
+Marketing:
+```
+site:linkedin.com/in/ ("Performance Marketing" OR "Growth Marketing") "Google Ads" "Meta Ads" "Bengaluru"
+```
+HR and recruiters:
+```
+site:linkedin.com/in/ ("Talent Acquisition" OR "Technical Recruiter") "IT recruitment" "Bengaluru" -intern
+```
+Finance:
+```
+site:linkedin.com/in/ ("Chartered Accountant" OR "CA") ("FP&A" OR "Financial Planning") "Bengaluru"
+```
+Healthcare:
+```
+site:doximity.com "cardiology" "Bengaluru"
+site:practo.com "cardiologist" "Bengaluru"
+```
+Legal:
+```
+site:linkedin.com/in/ ("Corporate Lawyer" OR "Legal Counsel") "Bengaluru" "contracts"
+site:barandbench.com "partner" "Bengaluru"
+```
+Architecture and interiors:
+```
+site:houzz.in/pro "interior designer" "Bengaluru"
+```
+Teachers and educators:
+```
+site:linkedin.com/in/ ("Assistant Professor" OR "Lecturer") "Computer Science" "Bengaluru"
+```
